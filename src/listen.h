@@ -14,9 +14,6 @@
  * using TCP or UDP, similar to Netcat's -l option.
  */
 
-typedef enum { PROTO_TCP, PROTO_UDP } protocol_t;
-typedef enum { IP_ANY, IP_V4, IP_V6 } ip_mode_t;
-
 /* Config for server mode */
 typedef struct {
     const char *port;      /* Port as string, e.g. "1234"          */

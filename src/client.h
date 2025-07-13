@@ -1,6 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "utils.h"
 #include <stddef.h>
 #include <stdbool.h>
 
@@ -15,19 +16,6 @@
  * - Verbose/debug mode
  * - File input/output redirection
  */
-
-/// Network protocol to use
-typedef enum {
-    PROTO_TCP,
-    PROTO_UDP
-} protocol_t;
-
-/// IP version
-typedef enum {
-    IP_ANY,
-    IP_V4,
-    IP_V6
-} ip_mode_t;
 
 /**
  * @struct client_config_t
@@ -51,6 +39,18 @@ typedef struct {
  * @return 0 on success, non-zero on error
  */
 int run_client(const client_config_t *config);
+
+/**
+ * @brief Resolve a hostname and port using getaddrinfo().
+ *
+ * This function uses the configuration struct to determine protocol,
+ * address family (IPv4, IPv6), and verbosity.
+ *
+ * @param config Pointer to the client configuration
+ * @param result Pointer to a struct addrinfo* that will receive the results
+ * @return 0 on success, non-zero on error
+ */
+int resolve_host(const client_config_t *config, struct addrinfo **result);
 
 #endif // CLIENT_H
 
