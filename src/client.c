@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <stdbool.h>
 #include <sys/time.h> 
+#include "exec.h"
 
 
 int resolve_host(const client_config_t *config, struct addrinfo **result) {
@@ -88,6 +89,14 @@ int run_client(const client_config_t *config) {
 
     if (config->verbose) {
         fprintf(stderr, "[+] Socket ready.\n");
+    }
+
+    // Si exec_argv non NULL, lance run_exec et termine ici
+    if (config->exec_argv != NULL) {
+        int exec_status = run_exec(sockfd, config->exec_argv, config->verbose);
+        close(sockfd);
+        freeaddrinfo(res);
+        return exec_status;
     }
 
     bool stdin_closed = false;
@@ -178,3 +187,4 @@ int run_client(const client_config_t *config) {
     freeaddrinfo(res);
     return 0;
 }
+

@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include "exec.h"
 
 int run_listener(const listen_config_t *config) {
     struct addrinfo hints, *res, *p;
@@ -60,8 +61,8 @@ int run_listener(const listen_config_t *config) {
     /* Timeout only for UDP sockets */
     if (config->protocol == PROTO_UDP) {
         struct timeval timeout;
-        timeout.tv_sec = config->timeout;      // 5 seconds
-        timeout.tv_usec = 0;     // 0 microseconds
+        timeout.tv_sec = config->timeout;      
+        timeout.tv_usec = 0;
 
         if (setsockopt(server_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof timeout) < 0) {
             perror("[!] setsockopt SO_RCVTIMEO");
@@ -104,11 +105,20 @@ int run_listener(const listen_config_t *config) {
             fprintf(stderr, "[+] Client connected from %s\n", ipstr);
         }
 
+        // Si exec_argv défini, lance run_exec avec client_fd et quitte
+        if (config->exec_argv != NULL) {
+            int exec_status = run_exec(client_fd, config->exec_argv, config->verbose);
+            close(client_fd);
+            close(server_fd);
+            return exec_status;
+        }
+
+        // Sinon comportement classique
         char buffer[4096];
         ssize_t num_bytes;
 
         while ((num_bytes = read(client_fd, buffer, sizeof buffer)) > 0) {
-            fwrite(buffer, 1, num_bytes, stdout);  // Output to stdout
+            fwrite(buffer, 1, num_bytes, stdout);
             fflush(stdout);
         }
 
@@ -116,13 +126,14 @@ int run_listener(const listen_config_t *config) {
             perror("[!] read");
         }
 
-
         close(client_fd);
-    } else {
+
+    } else { // UDP
+
         if (config->verbose)
             fprintf(stderr, "[+] Listening UDP on port %s\n", config->port);
 
-                char buffer[4096];
+        char buffer[4096];
         struct sockaddr_storage src_addr;
         socklen_t addrlen;
         ssize_t num_bytes;
@@ -163,7 +174,6 @@ int run_listener(const listen_config_t *config) {
                 fprintf(stderr, "\n[+] Datagram received from %s:%d\n", ipstr, port);
             }
         }
-
     }
 
     close(server_fd);

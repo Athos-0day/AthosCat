@@ -21,6 +21,7 @@ typedef struct {
     ip_mode_t  ip_mode;    /* IP_ANY, IP_V4, or IP_V6              */
     int  verbose;          /* 0 = quiet, 1 = verbose               */
     int  timeout;          /* seconds, 0 = no timeout (optional)   */
+    char *const *exec_argv;  /* NULL-terminated array of strings for exec */
 } listen_config_t;
 
 /**

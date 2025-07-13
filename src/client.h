@@ -28,6 +28,7 @@ typedef struct {
     ip_mode_t ip_mode;        ///< IPv4, IPv6 or any
     int timeout;              ///< Timeout in seconds for connection (-1 = no timeout)
     bool verbose;             ///< Verbose/debug mode
+    char *const *exec_argv;  /* NULL-terminated array of strings for exec */
     const char *input_file;   ///< Path to input file (NULL = use stdin)
     const char *output_file;  ///< Path to output file (NULL = use stdout)
 } client_config_t;
