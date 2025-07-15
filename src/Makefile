@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -O2
 LDFLAGS =
 
 # Source files
-SRCS = athoscat.c listen.c client.c
+SRCS = athoscat.c listen.c client.c exec.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
